@@ -1,0 +1,147 @@
+major_version: "1"
+minor_version: "0"
+default_target_cpu: "avr"
+
+default_toolchain {
+  cpu: "avr"
+  toolchain_identifier: "avr-gcc"
+}
+
+toolchain {
+  toolchain_identifier: "avr-gcc"
+
+  host_system_name: "x86_64-build_pc-linux-gnu"
+  target_system_name: "avr"
+  target_cpu: "avr"
+  target_libc: "avr"
+  compiler: "gcc"
+
+  abi_version: "avr"
+  abi_libc_version: "avr"
+
+  tool_path {
+    name: "ar"
+    path: "bin/avr-ar" 
+  }
+  tool_path {
+    name: "compat-ld"
+    path: "bin/avr-ld"
+  }
+  tool_path {
+    name: "cpp"
+    path: "bin/avr-cpp"
+  }
+  tool_path {
+    name: "gcc"
+    path: "bin/avr-gcc"
+  }
+  tool_path {
+    name: "gcov"
+    path: "bin/avr-gcov"
+  }
+  tool_path {
+    name: "ld"
+    path: "bin/avr-ld"
+  }
+  tool_path {
+    name: "nm"
+    path: "bin/avr-gcc-nm"
+  }
+  tool_path {
+    name: "objcopy"
+    path: "bin/avr-objcopy"
+  }
+  tool_path {
+    name: "objdump"
+    path: "bin/avr-objdump" 
+  }
+#  tool_path {
+#    name: "size"
+#    path: "bin/avr-size"
+#  }
+  tool_path {
+    name: "strip"
+    path: "bin/avr-strip"
+  }
+
+  supports_thin_archives: true
+  supports_normalizing_ar: true
+
+  # Enable coloring even if there's no attached terminal. Bazel removes the
+  # escape sequences if --nocolor is specified.
+  compiler_flag: "-fdiagnostics-color=always"
+
+  compiler_flag: "-O1"
+
+    # All warnings are enabled. Maybe enable -Werror as well?
+  compiler_flag: "-Wall"
+
+  # Enable a few more warnings that aren't part of -Wall.
+  compiler_flag: "-Wunused-but-set-parameter"
+
+  # But disable some that are problematic.
+  compiler_flag: "-Wno-free-nonheap-object" # has false positives
+
+  # Keep stack frames for debugging, even in opt mode.
+  compiler_flag: "-fno-omit-frame-pointer"
+  compiler_flag: "-fno-omit-frame-pointer"
+  
+  # Anticipated future default.
+  # This makes GCC and Clang do what we want when called through symlinks.
+  #unfiltered_cxx_flag: "-fno-canonical-prefixes"
+  unfiltered_cxx_flag: "-fno-canonical-system-headers"
+    
+    
+  # Make C++ compilation deterministic. Use linkstamping instead of these
+  # compiler symbols.
+  unfiltered_cxx_flag: "-Wno-builtin-macro-redefined"
+  unfiltered_cxx_flag: "-D__DATE__=\"redacted\""
+  unfiltered_cxx_flag: "-D__TIMESTAMP__=\"redacted\""
+  unfiltered_cxx_flag: "-D__TIME__=\"redacted\""
+
+   # Anticipated future default.
+  # This makes GCC and Clang do what we want when called through symlinks.
+  #linker_flag: "-no-canonical-prefixes"
+
+  #linker_flag: "-pie"
+  #linker_flag: "-Wl,-z,relro,-z,now"
+
+  # Stamp the binary with a unique identifier.
+  linker_flag: "-Wl,--build-id=md5"
+  #linker_flag: "-Wl,--hash-style=gnu"
+
+  compilation_mode_flags {
+    mode: DBG
+    # Enable debug symbols.
+    compiler_flag: "-g"
+    compiler_flag: "-O0"
+  }
+
+  compilation_mode_flags {
+    mode: OPT
+    compiler_flag: "-g0"
+    compiler_flag: "-Os"
+    compiler_flag: "-DNDEBUG"
+    compiler_flag: "-ffunction-sections"
+    compiler_flag: "-fdata-sections"
+    linker_flag: "-Wl,--gc-sections"
+  }
+
+  objcopy_embed_flag: "-I"
+  objcopy_embed_flag: "binary"
+
+  compiler_flag: "-nostdinc"
+  compiler_flag: "-isystem"
+  compiler_flag: "external/avr_tools/avr_gcc/lib/gcc/avr/6.3.0/include"
+  compiler_flag: "-isystem"
+  compiler_flag: "external/avr_tools/avr_gcc/lib/gcc/avr/6.3.0/include-fixed"
+  compiler_flag: "-isystem"
+  compiler_flag: "external/avr_tools/avr_gcc/avr/include"
+
+  cxx_builtin_include_directory: "external/avr_tools/avr_gcc/lib/gcc/avr/6.3.0/include"
+  cxx_builtin_include_directory: "external/avr_tools/avr_gcc/lib/gcc/avr/6.3.0/include-fixed"
+  cxx_builtin_include_directory: "external/avr_tools/avr_gcc/avr/include"
+
+  builtin_sysroot: ""
+
+}
