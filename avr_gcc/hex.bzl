@@ -10,11 +10,11 @@ def _hex_impl(ctx):
         outputs = [output],
         progress_message = "Creating code and data HEX file from %s" % input.short_path,
         command="%s -j .text -j .data -O ihex %s %s; %s --format=avr -C --mcu=%s %s" % ( \
-                ctx.executable._objcopy.path, 
-                input.path, 
-                output.path, 
-                ctx.executable._size.path, 
-                ctx.var["MCU"], 
+                ctx.executable._objcopy.path,
+                input.path,
+                output.path,
+                ctx.executable._size.path,
+                ctx.var["MCU"],
                 input.path
          )
     )
@@ -25,10 +25,10 @@ hex = rule(
     attrs={
         "src": attr.label(mandatory=True, allow_files=True, single_file=True),
         "_size": attr.label(
-                allow_files=True, 
-                single_file=True, 
-                executable=True, 
-                cfg="host", 
+                allow_files=True,
+                single_file=True,
+                executable=True,
+                cfg="host",
                 default=Label("@avr_tools//avr_gcc:size")
         ),
         "_objcopy": attr.label(
@@ -42,8 +42,6 @@ hex = rule(
     outputs={"out": "%{src}.hex"},
 )
 
-
-
 def _eeprom_impl(ctx):
     output = ctx.outputs.out
     input = ctx.file.src
@@ -55,12 +53,11 @@ def _eeprom_impl(ctx):
         outputs = [output],
         progress_message = "Generating eeprom HEX file from %s" % input.short_path,
         command="%s -j .eeprom --change-section-lma .eeprom=0 -O ihex %s %s" % ( \
-                ctx.executable._objcopy.path, 
-                input.path, 
-                output.path, 
+                ctx.executable._objcopy.path,
+                input.path,
+                output.path,
          )
     )
-
 
 eeprom = rule(
     implementation=_eeprom_impl,
@@ -75,6 +72,38 @@ eeprom = rule(
         ),
     },
     outputs={"out": "%{src}.eeprom"},
+)
+
+def _listing_impl(ctx):
+    output = ctx.outputs.out
+    input = ctx.file.src
+    ctx.action(
+        inputs=[
+                input,
+                ctx.executable._objdump
+        ],
+        outputs = [output],
+        progress_message = "Dumping assembly listing from %s" % input.short_path,
+        command="%s -S %s > %s" % ( \
+                ctx.executable._objdump.path,
+                input.path,
+                output.path,
+         )
+    )
+
+listing = rule(
+    implementation=_listing_impl,
+    attrs={
+        "src": attr.label(mandatory=True, allow_files=True, single_file=True),
+        "_objdump": attr.label(
+                allow_files=True,
+                single_file=True,
+                executable=True,
+                cfg="host",
+                default=Label("@avr_tools//avr_gcc:objdump")
+        ),
+    },
+    outputs={"out": "%{src}.lst"},
 )
 
 
