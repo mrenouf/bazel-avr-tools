@@ -36,7 +36,7 @@ hex = rule(
                 single_file=True,
                 executable=True,
                 cfg="host",
-                default=Label("@avr_tools//avr_gcc:objcopy")
+                default=Label("@avr_tools//tools/avr:objcopy")
         ),
     },
     outputs={"out": "%{src}.hex"},
@@ -68,7 +68,7 @@ eeprom = rule(
                 single_file=True,
                 executable=True,
                 cfg="host",
-                default=Label("@avr_tools//avr_gcc:objcopy")
+                default=Label("@avr_tools//tools/avr:objcopy")
         ),
     },
     outputs={"out": "%{src}.eeprom"},
@@ -100,7 +100,7 @@ listing = rule(
                 single_file=True,
                 executable=True,
                 cfg="host",
-                default=Label("@avr_tools//avr_gcc:objdump")
+                default=Label("@avr_tools//tools/avr:objdump")
         ),
     },
     outputs={"out": "%{src}.lst"},
