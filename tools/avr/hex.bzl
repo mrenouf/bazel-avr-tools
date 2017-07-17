@@ -29,7 +29,7 @@ hex = rule(
                 single_file=True,
                 executable=True,
                 cfg="host",
-                default=Label("@avr_tools//avr_gcc:size")
+                default=Label("@avr_tools//tools/avr:size")
         ),
         "_objcopy": attr.label(
                 allow_files=True,
