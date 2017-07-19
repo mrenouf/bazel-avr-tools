@@ -67,6 +67,9 @@ toolchain {
   supports_thin_archives: true
   supports_normalizing_ar: true
 
+  # Always include debug info since it has no impact program size when flashed
+  compiler_flag: "-g3"
+
   # Enable coloring even if there's no attached terminal. Bazel removes the
   # escape sequences if --nocolor is specified.
   compiler_flag: "-fdiagnostics-color=always"
@@ -74,19 +77,18 @@ toolchain {
   # All warnings are enabled. Maybe enable -Werror as well?
   compiler_flag: "-Wall"
 
+  compiler_flag: "-std=gnu99"
+
   # Enable a few more warnings that aren't part of -Wall.
   compiler_flag: "-Wunused-but-set-parameter"
 
   # But disable some that are problematic.
   compiler_flag: "-Wno-free-nonheap-object" # has false positives
 
-  # Keep stack frames for debugging, even in opt mode.
-  compiler_flag: "-fno-omit-frame-pointer"
-  
   # Anticipated future default.
   # This makes GCC and Clang do what we want when called through symlinks.
   #unfiltered_cxx_flag: "-fno-canonical-prefixes"
-  unfiltered_cxx_flag: "-fno-canonical-system-headers"
+  #unfiltered_cxx_flag: "-fno-canonical-system-headers"
     
   # Make C++ compilation deterministic. Use linkstamping instead of these
   # compiler symbols.
@@ -97,22 +99,31 @@ toolchain {
 
   # Stamp the binary with a unique identifier.
   linker_flag: "-Wl,--build-id=md5"
-  
+
+  compilation_mode_flags {
+    mode: FASTBUILD
+    compiler_flag: "-Os"
+  }
+
   compilation_mode_flags {
     mode: DBG
-    # Enable debug symbols.
-    compiler_flag: "-g"
     compiler_flag: "-O0"
   }
 
   compilation_mode_flags {
     mode: OPT
-    compiler_flag: "-g0"
     compiler_flag: "-Os"
     compiler_flag: "-DNDEBUG"
+    compiler_flag: "-fomit-frame-pointer"
+    compiler_flag: "-funsigned-bitfields"
+    compiler_flag: "-fshort-enums"
+    compiler_flag: "-fpack-struct"
     compiler_flag: "-ffunction-sections"
     compiler_flag: "-fdata-sections"
+    compiler_flag: "-fomit-frame-pointer"
+    compiler_flag: "-mrelax"
     linker_flag: "-Wl,--gc-sections"
+    linker_flag: "-Wl,--relax"
   }
 
   objcopy_embed_flag: "-I"

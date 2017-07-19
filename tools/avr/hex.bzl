@@ -84,7 +84,7 @@ def _listing_impl(ctx):
         ],
         outputs = [output],
         progress_message = "Dumping assembly listing from %s" % input.short_path,
-        command="%s -S %s > %s" % ( \
+        command="%s -j .text -j .data -j .eeprom -j .fuse -h -S -s %s > %s" % ( \
                 ctx.executable._objdump.path,
                 input.path,
                 output.path,
